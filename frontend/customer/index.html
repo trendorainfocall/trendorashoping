@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trendora | Onlayn Mağaza</title>
+<link rel="stylesheet" href="css/style.css" />
+
+<!-- PWA: manifest, tema rəngi və ikonlar -->
+<meta name="description" content="Trendora — moda və gündəlik məhsullar üçün onlayn mağaza." />
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#000000" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="apple-mobile-web-app-title" content="Trendora" />
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <button class="hamburger-btn" id="hamburger-btn" type="button" aria-label="Menyu" aria-expanded="false" aria-controls="nav-links">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <div class="logo"><img src="images/logo.png" alt="Trendora" class="logo-img" decoding="async" /></div>
+
+      <nav class="nav-links" id="nav-links">
+        <button class="nav-btn" data-view="shop">Mağaza</button>
+        <button class="nav-btn" data-view="discounts">🔥 Endirimli Məhsullar</button>
+        <button class="nav-btn" data-view="cart">Səbət <span id="cart-count" class="badge cart-count-el">0</span></button>
+        <button class="nav-btn" data-view="favorites">♡ Sevimlilər</button>
+        <button class="nav-btn" data-view="orders">Sifarişlərim</button>
+        <button class="nav-btn hidden" id="wheel-nav-btn" data-view="wheel">🎡 Endirim Çarxı</button>
+        <button class="nav-btn" data-view="chat">Dəstək Söhbəti <span id="chat-badge" class="badge chat-badge-el hidden">0</span></button>
+      </nav>
+
+      <div class="topbar-actions">
+        <button class="nav-btn notif-btn" data-view="notifications" id="notif-nav-btn" aria-label="Bildirişlər">
+          <svg class="notif-icon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M6 8a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6Z"/>
+            <path d="M9.5 17a2.5 2.5 0 0 0 5 0"/>
+          </svg>
+          <span class="notif-label">Bildirişlər</span>
+          <span id="notif-badge" class="badge notif-badge-el hidden">0</span>
+        </button>
+        <button class="nav-btn panel-btn" data-view="profile" id="profile-btn">
+          <span class="panel-text-full">Profil</span>
+          <span class="panel-text-short">Panelim</span>
+        </button>
+        <button class="nav-btn hidden" id="pwa-install-btn" type="button" aria-label="Tətbiqi quraşdır">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:4px;">
+            <path d="M12 3v12"/>
+            <path d="m7 10 5 5 5-5"/>
+            <path d="M5 19h14"/>
+          </svg>
+          <span>Tətbiqi quraşdır</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-overlay" id="nav-overlay"></div>
+  </header>
+
+  <div class="search-bar-section">
+    <div class="container search-bar-inner">
+      <div class="search-input-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"/>
+          <path d="m21 21-4.3-4.3"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Məhsul, mağaza və ya kateqoriya axtarın..." autocomplete="off" />
+      </div>
+      <button type="button" class="filter-toggle-btn" id="filter-toggle-btn" aria-expanded="false" aria-controls="shop-filter-panel">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/>
+          <line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/>
+          <line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/>
+        </svg>
+        <span>Filtrlər</span>
+        <span class="filter-count-badge hidden" id="filter-count-badge">0</span>
+      </button>
+      <div class="region-select-wrap">
+        <svg class="region-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        <select id="region-filter">
+          <option value="">Bütün bölgələr</option>
+          <option value="baki">Bakı</option>
+          <option value="sumqayit">Sumqayıt</option>
+          <option value="gence">Gəncə</option>
+          <option value="mingecevir">Mingəçevir</option>
+          <option value="naftalan">Naftalan</option>
+          <option value="lenkeran">Lənkəran</option>
+          <option value="seki">Şəki</option>
+          <option value="sirvan">Şirvan</option>
+          <option value="yevlax">Yevlax</option>
+          <option value="naxcivan">Naxçıvan</option>
+          <option value="abseron">Abşeron</option>
+          <option value="agcabedi">Ağcabədi</option>
+          <option value="agdam">Ağdam</option>
+          <option value="agdas">Ağdaş</option>
+          <option value="agstafa">Ağstafa</option>
+          <option value="agsu">Ağsu</option>
+          <option value="astara">Astara</option>
+          <option value="balaken">Balakən</option>
+          <option value="barda">Bərdə</option>
+          <option value="beylegan">Beyləqan</option>
+          <option value="bilesuvar">Biləsuvar</option>
+          <option value="cebrayil">Cəbrayıl</option>
+          <option value="celilabad">Cəlilabad</option>
+          <option value="dashkesen">Daşkəsən</option>
+          <option value="fuzuli">Füzuli</option>
+          <option value="gedebey">Gədəbəy</option>
+          <option value="goranboy">Goranboy</option>
+          <option value="goycay">Göyçay</option>
+          <option value="goygol">Göygöl</option>
+          <option value="hacigabul">Hacıqabul</option>
+          <option value="imisli">İmişli</option>
+          <option value="ismayilli">İsmayıllı</option>
+          <option value="kelbecer">Kəlbəcər</option>
+          <option value="kurdemir">Kürdəmir</option>
+          <option value="lacin">Laçın</option>
+          <option value="lerik">Lerik</option>
+          <option value="masalli">Masallı</option>
+          <option value="neftcala">Neftçala</option>
+          <option value="oguz">Oğuz</option>
+          <option value="qabala">Qəbələ</option>
+          <option value="qax">Qax</option>
+          <option value="qazax">Qazax</option>
+          <option value="qobustan">Qobustan</option>
+          <option value="quba">Quba</option>
+          <option value="qubadli">Qubadlı</option>
+          <option value="qusar">Qusar</option>
+          <option value="saatli">Saatlı</option>
+          <option value="sabirabad">Sabirabad</option>
+          <option value="salyan">Salyan</option>
+          <option value="samaxi">Şamaxı</option>
+          <option value="samkir">Şəmkir</option>
+          <option value="siyezen">Siyəzən</option>
+          <option value="tovuz">Tovuz</option>
+          <option value="ucar">Ucar</option>
+          <option value="xacmaz">Xaçmaz</option>
+          <option value="xizi">Xızı</option>
+          <option value="yardimli">Yardımlı</option>
+          <option value="zaqatala">Zaqatala</option>
+          <option value="zerdab">Zərdab</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-panel hidden" id="shop-filter-panel">
+    <div class="container filter-panel-inner">
+      <div class="filter-grid">
+        <div class="filter-field">
+          <label for="filter-name">Məhsul adı</label>
+          <input type="text" id="filter-name" placeholder="Məhsul adı üzrə axtar..." autocomplete="off" />
+        </div>
+        <div class="filter-field">
+          <label for="filter-category">Kateqoriya</label>
+          <select id="filter-category"><option value="">Bütün kateqoriyalar</option></select>
+        </div>
+        <div class="filter-field">
+          <label>Qiymət aralığı (₼)</label>
+          <div class="filter-range-inputs">
+            <input type="number" id="filter-price-min" placeholder="min" min="0" />
+            <span>—</span>
+            <input type="number" id="filter-price-max" placeholder="max" min="0" />
+          </div>
+        </div>
+        <div class="filter-field">
+          <label for="filter-unit">Ölçü vahidi</label>
+          <select id="filter-unit"><option value="">Hamısı</option></select>
+        </div>
+        <div class="filter-field">
+          <label for="filter-stock">Stok vəziyyəti</label>
+          <select id="filter-stock">
+            <option value="">Hamısı</option>
+            <option value="in_stock">Stokda var</option>
+            <option value="out_of_stock">Stokda yoxdur</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="filter-rating">Reytinq</label>
+          <select id="filter-rating">
+            <option value="0">Hamısı</option>
+            <option value="4">4★ və yuxarı</option>
+            <option value="3">3★ və yuxarı</option>
+            <option value="2">2★ və yuxarı</option>
+            <option value="1">1★ və yuxarı</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="filter-delivery">Çatdırılma növü</label>
+          <select id="filter-delivery">
+            <option value="">Hamısı</option>
+            <option value="standard">Standart çatdırılma</option>
+            <option value="express">Sürətli çatdırılma</option>
+            <option value="pickup">Mağazadan götürmə</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="filter-sort">Sıralama</label>
+          <select id="filter-sort">
+            <option value="recommended">Tövsiyə olunan</option>
+            <option value="newest">Ən yeni</option>
+            <option value="oldest">Ən köhnə</option>
+            <option value="price_asc">Qiymət (Aşağıdan → Yuxarı)</option>
+            <option value="price_desc">Qiymət (Yuxarıdan → Aşağı)</option>
+            <option value="bestselling">Ən çox satılan</option>
+            <option value="rating_desc">Ən yüksək reytinq</option>
+            <option value="discount_desc">Ən çox endirimli</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-field filter-field-wide">
+        <label>Rəng</label>
+        <div class="filter-chip-row" id="filter-colors"></div>
+      </div>
+      <div class="filter-field filter-field-wide">
+        <label>Ölçü</label>
+        <div class="filter-chip-row" id="filter-sizes"></div>
+      </div>
+
+      <div class="filter-toggles">
+        <label class="checkbox-label"><input type="checkbox" id="filter-discounted" /><span>🔥 Endirimli məhsullar</span></label>
+        <label class="checkbox-label"><input type="checkbox" id="filter-bestseller" /><span>⭐ Ən çox satılan məhsullar</span></label>
+      </div>
+
+      <div class="filter-actions">
+        <button type="button" class="btn btn-secondary btn-sm" id="filter-reset-btn">Sıfırla</button>
+        <button type="button" class="btn btn-primary" id="filter-apply-btn">Filtri tətbiq et</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+
+    <!-- AUTH VIEW -->
+    <section id="view-auth" class="view">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Daxil ol</button>
+          <button class="auth-tab" data-tab="register">Qeydiyyat</button>
+        </div>
+
+        <form id="login-form" class="auth-form">
+          <input type="email" id="login-email" placeholder="Email" required />
+          <input type="password" id="login-password" placeholder="Şifrə" required />
+          <button type="submit" class="btn btn-primary">Daxil ol</button>
+          <button type="button" id="forgot-password-link" class="link-btn">Şifrəni unutdum</button>
+        </form>
+
+        <form id="register-form" class="auth-form hidden">
+          <input type="text" id="reg-name" placeholder="Ad" required />
+          <input type="text" id="reg-surname" placeholder="Soyad" />
+          <input type="email" id="reg-email" placeholder="Email" required />
+          <input type="tel" id="reg-phone" placeholder="Telefon" />
+          <input type="text" id="reg-address" placeholder="Ünvan" />
+          <input type="password" id="reg-password" placeholder="Şifrə" required />
+          <input type="password" id="reg-pin" placeholder="4 rəqəmli PIN" maxlength="4" inputmode="numeric" pattern="\d{4}" required />
+          <input type="password" id="reg-confirm-pin" placeholder="PIN-i təkrar edin" maxlength="4" inputmode="numeric" pattern="\d{4}" required />
+          <p class="hint">PIN hesabınızı təsdiqləmək üçün istifadə olunacaq 4 rəqəmli koddur.</p>
+          <button type="submit" class="btn btn-primary">Qeydiyyatdan keç</button>
+        </form>
+
+        <!-- ŞİFRƏNİ UNUTDUM FORMU -->
+        <form id="forgot-email-form" class="auth-form hidden">
+          <p class="hint">Şifrənizi bərpa etmək üçün qeydiyyatdan keçdiyiniz email ünvanını daxil edin.</p>
+          <input type="email" id="forgot-email" placeholder="Email" required />
+          <button type="submit" class="btn btn-primary">Davam et</button>
+          <button type="button" id="forgot-back-to-login" class="link-btn">Girişə qayıt</button>
+        </form>
+
+        <form id="forgot-reset-form" class="auth-form hidden">
+          <p id="forgot-pin-hint" class="hint"></p>
+          <input type="text" id="forgot-pin" placeholder="4 rəqəmli təhlükəsizlik PIN-iniz" maxlength="4" inputmode="numeric" required />
+          <input type="password" id="forgot-new-password" placeholder="Yeni şifrə" required />
+          <input type="password" id="forgot-confirm-password" placeholder="Şifrənin təkrarı" required />
+          <button type="submit" class="btn btn-primary">Şifrəni yenilə</button>
+          <button type="button" id="forgot-reset-back" class="link-btn">Girişə qayıt</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- SHOP VIEW -->
+    <section id="view-shop" class="view hidden">
+      <div id="brand-marquee" class="brand-marquee hidden">
+        <div class="brand-marquee-track" id="brand-marquee-track"></div>
+      </div>
+      <div class="shop-toolbar">
+        <div class="category-bar-wrap">
+          <div class="category-bar" id="category-filter" role="tablist" aria-label="Kateqoriya filtri"></div>
+        </div>
+      </div>
+      <div id="product-grid" class="product-grid"></div>
+    </section>
+
+    <!-- DISCOUNTED PRODUCTS VIEW -->
+    <section id="view-discounts" class="view hidden">
+      <h2>🔥 Endirimli Məhsullar</h2>
+      <div id="discount-grid" class="product-grid"></div>
+    </section>
+
+    <!-- CART VIEW -->
+    <section id="view-cart" class="view hidden">
+      <h2>Səbətim</h2>
+      <div id="cart-items"></div>
+      <div id="cart-summary" class="cart-summary"></div>
+    </section>
+
+    <!-- FAVORITES VIEW -->
+    <section id="view-favorites" class="view hidden">
+      <h2>♡ Sevimlilər</h2>
+      <div id="favorites-grid" class="product-grid"></div>
+    </section>
+
+    <!-- ORDERS VIEW (Tracking) -->
+    <section id="view-orders" class="view hidden">
+      <h2>Sifarişlərim</h2>
+      <div id="orders-list"></div>
+    </section>
+
+    <!-- WHEEL VIEW -->
+    <section id="view-wheel" class="view hidden">
+      <h2>🎡 Endirim Çarxı</h2>
+      <div id="wheel-container"></div>
+    </section>
+
+    <!-- CHAT VIEW -->
+    <section id="view-chat" class="view hidden">
+      <h2>Dəstək Söhbəti</h2>
+      <div class="chat-box">
+        <div id="chat-messages" class="chat-messages"></div>
+        <form id="chat-form" class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="Mesajınızı yazın..." maxlength="2000" autocomplete="off" required />
+          <button type="submit" class="btn btn-primary">Göndər</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- NOTIFICATIONS VIEW -->
+    <section id="view-notifications" class="view hidden">
+      <h2>🔔 Bildirişlər</h2>
+
+      <div class="profile-card notifications-card">
+        <div class="section-title-row">
+          <p class="section-title">🔔 Bildirişlər</p>
+          <span id="notifications-unread-label" class="hint"></span>
+        </div>
+        <div id="notifications-list" class="notifications-list"></div>
+      </div>
+    </section>
+
+    <!-- PROFILE VIEW -->
+    <section id="view-profile" class="view hidden">
+      <h2>Profil</h2>
+
+      <div id="profile-info" class="profile-card"></div>
+      <button id="logout-btn" class="btn btn-secondary">Çıxış</button>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+
+      <div class="footer-col footer-brand">
+
+        <p class="footer-about" id="footer-about-text">
+          Trendora — keyfiyyətli məhsulları sərfəli qiymətlərlə təqdim edən
+          onlayn mağazadır. Rahat alış-veriş, sürətli çatdırılma və etibarlı dəstək.
+        </p>
+        <div class="footer-social" id="footer-social"></div>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">Naviqasiya</h4>
+        <ul class="footer-links">
+          <li><a href="#" class="footer-link" data-view="shop">Ana Səhifə</a></li>
+          <li><a href="#" class="footer-link" data-view="shop">Məhsullar</a></li>
+          <li><a href="#" class="footer-link" data-view="shop" data-focus="category">Kateqoriyalar</a></li>
+          <li><a href="#" class="footer-link" data-view="cart">Səbətim</a></li>
+          <li><a href="#" class="footer-link" data-view="favorites">Sevimlilər</a></li>
+          <li><a href="#" class="footer-link" data-view="orders">Sifarişlərim</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">Şirkət</h4>
+        <ul class="footer-links">
+          <li><a href="#footer-about" class="footer-link footer-anchor">Haqqımızda</a></li>
+          <li><a href="#footer-contact" class="footer-link footer-anchor">Əlaqə</a></li>
+          <li><a href="#" class="footer-link" data-view="chat">Dəstək Söhbəti</a></li>
+          <li><a href="#" class="footer-link" data-view="notifications">Bildirişlər</a></li>
+          <li><a href="#" class="footer-link" data-view="profile">Profil</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col" id="footer-contact">
+        <h4 class="footer-heading">Əlaqə</h4>
+        <ul class="footer-contact-list">
+          <li>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            <a href="mailto:info@trendora.az" class="footer-link" id="footer-email-link">info@trendora.az</a>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .7 3a2 2 0 0 1-.4 2.1L8 10.3a16 16 0 0 0 6 6l1.5-1.4a2 2 0 0 1 2.1-.4c1 .4 2 .6 3 .7a2 2 0 0 1 1.7 2Z"/></svg>
+            <a href="tel:+994000000000" class="footer-link" id="footer-phone-link">+994 00 000 00 00</a>
+          </li>
+          <li id="footer-about">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span id="footer-address-text">Bakı, Azərbaycan</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>&copy; <span id="footer-year"></span> Trendora. Bütün hüquqlar qorunur.</span>
+        <span class="footer-bottom-links">
+          <a href="#" class="footer-link">Gizlilik Siyasəti</a>
+          <span class="footer-dot">•</span>
+          <a href="#" class="footer-link">İstifadə Qaydaları</a>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- PAYMENT MODAL -->
+  <div id="payment-modal-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>Ödəniş üsulu</h3>
+        <button onclick="closePaymentModal()" class="modal-close">✕</button>
+      </div>
+      <div id="payment-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- PRODUCT DETAIL MODAL -->
+  <div id="product-modal-overlay" class="modal-overlay hidden">
+    <div class="modal modal-wide">
+      <div class="modal-head">
+        <h3>Məhsul haqqında</h3>
+        <button onclick="closeProductModal()" class="modal-close">✕</button>
+      </div>
+      <div id="product-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- IMAGE LIGHTBOX -->
+  <div id="lightbox-overlay" class="lightbox-overlay hidden" onclick="handleLightboxOverlayClick(event)">
+    <button class="lightbox-close" onclick="closeLightbox()" title="Bağla">✕</button>
+    <button class="lightbox-share" onclick="shareLightboxImage(event)" title="Linki kopyala">🔗</button>
+    <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(event, -1)" title="Əvvəlki">‹</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="" decoding="async" />
+    <button class="lightbox-nav lightbox-next" onclick="lightboxNav(event, 1)" title="Növbəti">›</button>
+    <div id="lightbox-counter" class="lightbox-counter"></div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- BOTTOM NAVIGATION (mobil) -->
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Əsas naviqasiya">
+    <button class="nav-btn bottom-nav-btn" data-view="shop" aria-label="Ana Səhifə">
+      <svg class="bottom-nav-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 11.5 12 4l8 7.5"/>
+        <path d="M6 10v9a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1v-9"/>
+      </svg>
+      <span class="bottom-nav-label">Ana Səhifə</span>
+    </button>
+
+    <button class="nav-btn bottom-nav-btn" data-view="shop" data-focus="category" id="bottom-nav-categories" aria-label="Kateqoriyalar">
+      <svg class="bottom-nav-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/>
+        <rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/>
+        <rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/>
+        <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>
+      </svg>
+      <span class="bottom-nav-label">Kateqoriyalar</span>
+    </button>
+
+    <button class="nav-btn bottom-nav-btn" data-view="cart" aria-label="Səbət">
+      <span class="bottom-nav-icon-wrap">
+        <svg class="bottom-nav-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="20" r="1.4"/>
+          <circle cx="18" cy="20" r="1.4"/>
+          <path d="M2.5 3h2l2.2 11.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H6"/>
+        </svg>
+        <span id="bottom-cart-count" class="badge bottom-nav-badge cart-count-el">0</span>
+      </span>
+      <span class="bottom-nav-label">Səbət</span>
+    </button>
+
+    <button class="nav-btn bottom-nav-btn" data-view="notifications" aria-label="Bildirişlər">
+      <span class="bottom-nav-icon-wrap">
+        <svg class="bottom-nav-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 8a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6Z"/>
+          <path d="M9.5 17a2.5 2.5 0 0 0 5 0"/>
+        </svg>
+        <span id="bottom-notif-badge" class="badge bottom-nav-badge notif-badge-el hidden">0</span>
+      </span>
+      <span class="bottom-nav-label">Bildirişlər</span>
+    </button>
+
+    <button class="nav-btn bottom-nav-btn" data-view="chat" aria-label="Dəstək söhbəti">
+      <span class="bottom-nav-icon-wrap">
+        <svg class="bottom-nav-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4.5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/>
+          <path d="M8 10h8M8 13h5"/>
+        </svg>
+        <span id="bottom-chat-badge" class="badge bottom-nav-badge chat-badge-el hidden">0</span>
+      </span>
+      <span class="bottom-nav-label">Dəstək</span>
+    </button>
+
+    <button class="nav-btn bottom-nav-btn" data-view="profile" aria-label="Profil">
+      <svg class="bottom-nav-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="3.5"/>
+        <path d="M4.5 20c1.4-3.6 4.4-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/>
+      </svg>
+      <span class="bottom-nav-label">Profil</span>
+    </button>
+  </nav>
+
+  <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>
